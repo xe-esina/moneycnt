@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block menu %}
+    <li><a href="{{ url_for('counter') }}">Считалка</a></li>
+    <li><a href="{{ url_for('stats') }}">Статистика</a></li>
+{% endblock %}
+
+{% block app_content %}
+<h1>
+    <a href="{{ url_for('counter', month=prev[0], year=prev[1]) }}"><<</a>
+    {{ cur_month_word }} {{ cur[1] }}
+    <a href="{{ url_for('counter', month=next[0], year=next[1]) }}">>></a>
+</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <table class="table">
+        <tr>
+            <th>{{ form.day.label }}</th>
+            <th>{{ form.desc.label }}</th>
+            <th>{{ form.categ.label }}</th>
+            <th>{{ form.org.label }}</th>
+            <th>{{ form.op.label }}</th>
+            <th>{{ form.sum.label }}</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td>{{ form.day(size=2) }}</td>
+            <td>{{ form.desc(size=14) }}</td>
+            <td>{{ form.categ }}</td>
+            <td>{{ form.org(size=8) }}</td>
+            <td>{{ form.op }}</td>
+            <td>{{ form.sum(size=8) }}</td>
+            <td><span>{{ form.submit() }}</span></td>
+        </tr>
+        {% for t in trans %}
+        <tr>
+            <td>{{ t.date.day }}</td>
+            <td><b>{{ t.desc }}</b></td>
+            <td><span class="badge">{{ t.categ }}</span></td>
+            <td><i>{{ t.org}}</i></td>
+            <td></td>
+            <td>
+                <span class="{% if t.sum > 0 %}text-success{% else %}text-danger{% endif %}">
+                    <b>₽  {% if t.sum > 0 %}+{% else %}-{% endif %} {{ t.sum|abs }}</b>
+                </span>
+            </td>
+            <td>
+                <a class="bg-info" href="{{ url_for('counter', month=cur[0], year=cur[1], edit=t.id) }}">Изменить</a>
+                <a class="bg-danger" href="{{ url_for('counter', month=cur[0], year=cur[1], delete=t.id) }}">Удалить</a>
+            </td>
+        {% endfor %}
+    </table>
+</form>
+{% endblock %}

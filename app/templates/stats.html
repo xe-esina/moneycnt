@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block menu %}
+    <li><a href="{{ url_for('counter') }}">Деньги</a></li>
+    <li><a href="{{ url_for('stats') }}">Статистика</a></li>
+{% endblock %}
+
+{% block app_content %}
+<h1>
+    <a href="{{ url_for('stats', month=prev[0], year=prev[1]) }}"><<</a>
+    {{ cur_month_word }} {{ cur[1] }}
+    <a href="{{ url_for('stats', month=next[0], year=next[1]) }}">>></a>
+</h1>
+<div id="piechart" style="width: 1200px; height: 600px;"></div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            {% for key, value in data.items() %}
+				{% if value is string %}
+					['{{ key }}', '{{ value }}'],
+				{% else %}
+					['{{ key }}', {{ value }}],
+				{% endif %}
+			{% endfor %}
+        ]);
+
+        var options = {
+            title: '{{ user.username }}',
+            is3D: false,
+            pieHole: 0.4,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+        chart.draw(data, options);
+    }
+</script>
+{% endblock %}
